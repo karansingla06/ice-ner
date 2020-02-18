@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?><testsuite errors="0" failures="0" name="pytest" skipped="0" tests="7" time="1.117"><testcase classname="ice_rest.test.rest.services.parse.test_fetch_project" file="ice_rest/test/rest/services/parse/test_fetch_project.py" line="34" name="test_fetch_project_api" time="0.006"><system-err>INFO:ice_rest.rest.services.parse.fetch_project:{&apos;doc&apos;: {u&apos;json&apos;: {u&apos;serviceid&apos;: u&apos;abc&apos;}}}
+</system-err></testcase><testcase classname="ice_rest.test.rest.services.parse.test_fetch_project" file="ice_rest/test/rest/services/parse/test_fetch_project.py" line="41" name="test_fetch_project_api1" time="0.007"><system-err>INFO:ice_rest.rest.services.parse.fetch_project:{&apos;doc&apos;: {}}
+ERROR:ice_rest.rest.services.parse.fetch_project:json
+Traceback (most recent call last):
+  File &quot;ice_rest/rest/services/parse/fetch_project.py&quot;, line 43, in on_post
+    json = doc[&quot;json&quot;]
+KeyError: &apos;json&apos;
+</system-err></testcase><testcase classname="ice_rest.test.rest.services.parse.test_fetch_project" file="ice_rest/test/rest/services/parse/test_fetch_project.py" line="48" name="test_fetch_project_api2" time="0.007"><system-err>INFO:ice_rest.rest.services.parse.fetch_project:{&apos;doc&apos;: {u&apos;json&apos;: {u&apos;serviceid&apos;: u&apos;abc&apos;}}}
+ERROR:ice_rest.rest.services.parse.fetch_project:foooo
+Traceback (most recent call last):
+  File &quot;ice_rest/rest/services/parse/fetch_project.py&quot;, line 47, in on_post
+    fetched_project = fetch_project_if_exists(serviceid)
+  File &quot;/home/swathi/Desktop/PyOrc/NER/ice_rest/local/lib/python2.7/site-packages/mock/mock.py&quot;, line 1092, in __call__
+    return _mock_self._mock_call(*args, **kwargs)
+  File &quot;/home/swathi/Desktop/PyOrc/NER/ice_rest/local/lib/python2.7/site-packages/mock/mock.py&quot;, line 1143, in _mock_call
+    raise effect
+AssertionError: foooo
+INFO:ice_rest.rest.services.parse.fetch_project:&lt;type &apos;str&apos;&gt;
+</system-err></testcase><testcase classname="ice_rest.test.rest.services.parse.test_fetch_project" file="ice_rest/test/rest/services/parse/test_fetch_project.py" line="55" name="test_fetch_project_api3" time="0.007"><system-err>INFO:ice_rest.rest.services.parse.fetch_project:{&apos;doc&apos;: {u&apos;json&apos;: {u&apos;serviceid&apos;: u&apos;abc&apos;}}}
+ERROR:ice_rest.rest.services.parse.fetch_project:foooo
+Traceback (most recent call last):
+  File &quot;ice_rest/rest/services/parse/fetch_project.py&quot;, line 47, in on_post
+    fetched_project = fetch_project_if_exists(serviceid)
+  File &quot;/home/swathi/Desktop/PyOrc/NER/ice_rest/local/lib/python2.7/site-packages/mock/mock.py&quot;, line 1092, in __call__
+    return _mock_self._mock_call(*args, **kwargs)
+  File &quot;/home/swathi/Desktop/PyOrc/NER/ice_rest/local/lib/python2.7/site-packages/mock/mock.py&quot;, line 1143, in _mock_call
+    raise effect
+Exception: foooo
+</system-err></testcase><testcase classname="ice_rest.test.rest.services.parse.test_fetch_project" file="ice_rest/test/rest/services/parse/test_fetch_project.py" line="62" name="test_fetch_project_api4" time="0.006"><system-err>INFO:ice_rest.rest.services.parse.fetch_project:{&apos;doc&apos;: {u&apos;json&apos;: {u&apos;serviceid&apos;: u&apos;abc&apos;}}}
+</system-err></testcase><testcase classname="ice_rest.test.rest.services.parse.test_fetch_project" file="ice_rest/test/rest/services/parse/test_fetch_project.py" line="69" name="test_fetch_project_if_exists1" time="0.014"></testcase><testcase classname="ice_rest.test.rest.services.parse.test_fetch_project" file="ice_rest/test/rest/services/parse/test_fetch_project.py" line="73" name="test_update_project_if_exists2" time="0.006"><system-err>INFO:ice_rest.rest.services.parse.fetch_project:project fetched from DB
+</system-err></testcase></testsuite>

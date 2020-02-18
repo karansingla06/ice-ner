@@ -1,0 +1,16 @@
+1 . Import the patternphrase collection and pretrainedentitymodels collection into verbis.
+
+	cd verbis
+	mongoimport -u icexd -p icexd123 -d verbis -c pretrainedentitymodels --file batch_scripts/data/pretrainedentitymodels.json
+	mongoimport -u icexd -p icexd123 -d verbis -c patternphrase --file batch_scripts/data/patternphrase.json
+
+2. Download Corenlp spanish models
+
+	cd /opt/corenlp/stanford-corenlp-full-2018-02-27/
+	wget http://nlp.stanford.edu/software/stanford-spanish-corenlp-2018-02-27-models.jar
+	sudo chmod -R 777 /opt/corenlp/	
+
+3. Run requirements.txt
+
+	cd verbis
+	pip install -r requirements.txt

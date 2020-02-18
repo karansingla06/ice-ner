@@ -1,0 +1,11 @@
+numpy
+falcon
+gunicorn
+setuptools
+nltk
+torch==0.3.1
+h5py
+stanfordcorenlp==3.9.1.1
+cython
+spacy
+tensorflow

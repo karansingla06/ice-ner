@@ -1,0 +1,22 @@
+# Compiled python modules.
+*.pyc
+*.pyo
+
+# Setuptools distribution folder.
+/dist/
+
+# Python egg metadata, regenerated from source files by setuptools.
+/*.egg-info
+
+# Python egg
+.eggs
+
+# Ignore pytest cache code
+.cache
+
+.DS_Store
+
+#pycharm
+.idea
+
+examples

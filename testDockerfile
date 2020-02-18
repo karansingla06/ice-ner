@@ -1,0 +1,14 @@
+FROM ubuntu:16.04
+ENV HOME=/ice-ner
+WORKDIR $HOME
+COPY . $HOME
+RUN apt-get update && \
+    apt-get -y install libev-dev \
+    python-pip \
+    unzip \
+    wget \
+    vim
+RUN python -m compileall .
+RUN find . -type f -name '*.py' -delete
+CMD ["sleep","3600"]
+ 

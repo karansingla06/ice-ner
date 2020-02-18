@@ -1,0 +1,74 @@
+FROM ubuntu:16.04
+
+ENV HOME=/ice-ner
+ENV CORENLP_ARCHIVE_VERSION=2018-02-27
+ENV CORENLP_ARCHIVE=stanford-corenlp-full-${CORENLP_ARCHIVE_VERSION}
+ENV CORENLP_PATH=/corenlp
+
+WORKDIR $HOME
+COPY . $HOME
+
+RUN apt-get update 
+RUN apt-get install -y software-properties-common && \
+    apt-get -y install libev-dev   && \     
+    apt-get install wget && \
+    apt-get install unzip
+
+RUN rm -rf ice_rest && \
+    rm -rf scheduler
+
+RUN add-apt-repository ppa:jonathonf/python-3.6
+RUN apt-get update -y
+
+RUN apt-get install -y build-essential python3.6 python3.6-dev python3-pip python3.6-venv && \
+        apt-get install -y git
+
+# update pip
+RUN python3.6 -m pip install pip --upgrade && \
+        python3.6 -m pip install wheel
+
+RUN pip install numpy && \
+    pip install --upgrade setuptools && \
+    pip install --trusted-host pypi.python.org -r ice_celery/requirements.txt
+RUN python3.6 -m nltk.downloader stopwords && \
+    python3.6 -m nltk.downloader punkt && \
+    python3.6 -m nltk.downloader wordnet
+RUN mkdir -p .verbis/models/mitie && \
+    cp -r .verbis_git/* .verbis
+RUN wget https://github.com/mit-nlp/MITIE/releases/download/v0.4/MITIE-models-v0.2.tar.bz2 && \
+    tar jxf MITIE-models-v0.2.tar.bz2 && \
+    mv MITIE-models/english .verbis/models/mitie/ && \
+    wget https://github.com/mit-nlp/MITIE/releases/download/v0.4/MITIE-models-v0.2-Spanish.zip && \
+    unzip MITIE-models-v0.2-Spanish.zip && \
+    mv MITIE-models/spanish .verbis/models/mitie/
+RUN python3.6 -m spacy download en_core_web_lg && \
+    python3.6 -m spacy link en_core_web_lg en && \
+    python3.6 -m spacy download es_core_news_sm
+RUN cd mitie && python3.6 setup.py build && \
+    mv build/lib/mitie /usr/local/lib/python3.6/site-packages
+RUN rm -rf mitie
+
+
+#install java for corenlp
+#RUN apt-get install -y  software-properties-common && \
+ #   add-apt-repository ppa:webupd8team/java -y && \
+  #  apt-get update && \
+#    echo oracle-java7-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections && \
+ #   apt-get install -y oracle-java8-installer && \
+  #  apt-get clean
+
+
+# Download corenlp jars to /opt/corenlp
+
+# RUN mkdir -p /opt && \
+ #   cd /opt && \
+  #  wget http://nlp.stanford.edu/software/$CORENLP_ARCHIVE.zip && \
+   # unzip $CORENLP_ARCHIVE.zip && \
+   # mv $CORENLP_ARCHIVE $CORENLP_PATH && \
+   # rm $CORENLP_ARCHIVE.zip
+
+#CMD ["sleep","3600"]
+RUN python3.6 -m compileall .
+ENV PYTHONPATH="/usr/local/lib/python3.6/site-packages"
+#RUN find . -type f -name '*.py' -delete
+CMD ["celery", "-A","ice_celery.app", "worker", "--loglevel=info"]

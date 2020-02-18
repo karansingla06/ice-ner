@@ -1,0 +1,117 @@
+version: '2'
+services:
+    ice-xd-rest:
+        image: ice_rest:v1.0
+        restart: unless-stopped
+        volumes:
+          - /home/ice-ner-dev/.verbis/store:/ice-ner/.verbis/store
+        ports:
+          - 8021:8021
+        environment:
+          - REDIS_END_POINT=redis://ice-xd-redis:6379/0
+        #  - MONGO_END_POINT=mongodb://icexd:icexd123@ice-xd-mongo:27017/verbis
+          - MONGO_END_POINT=mongodb://ice-xd-mongo:27017/verbis
+          - MONGO_DB_NAME=verbis
+          - MINIO_END_POINT=ice-xd-minio:9000
+          - MINIO_ACCESS_KEY=admin
+          - MINIO_SECRET_KEY=admin@123
+          - MINIO_BUCKET_NAME=icemodels
+          - CORENLP_PORT=9001
+          - CORENLP_END_POINT=http://ice-xd-corenlp:9001/
+          - BOTANALYTICS_END_POINT=http://ice-xd-dev.southindia.cloudapp.azure.com:9099/api/botanalytics
+          - BOTANALYTICS_LOG_FLAG=ON
+          - VARIATIONS_END_POINT=http://ice-nlp-prod.eastus.cloudapp.azure.com:8027/generate_variations
+        links:
+          - ice-xd-mongo
+          - ice-xd-redis
+          - ice-xd-minio
+#          - ice-xd-corenlp
+    ice-xd-mongo:
+        image: mongo:4.1.4
+        restart: unless-stopped
+        environment:
+          - MONGO_DATA_DIR=/data/db
+          - MONGO_INITDB_ROOT_USERNAME=iceAdmin
+          - MONGO_INITDB_ROOT_PASSWORD=ice123
+          - MONGO_INITDB_DATABASE=admin
+        volumes:
+          - /home/ice-ner-dev/azure_git/test_mongo_final:/data/db
+          - /home/ice-ner-dev/azure_git/verbis/docker/mongo_init_scripts/:/docker-entrypoint-initdb.d/
+        ports:
+          - 27017:27017
+        command: mongod    
+    ice-xd-redis:
+        image: redis
+        restart: unless-stopped
+        ports:
+          - 6379:6379
+    ice-xd-minio:
+        image: minio/minio
+        restart: unless-stopped
+        volumes:
+          - /home/ice-ner-dev/data/minio:/data
+        ports:
+          - 9000:9000
+        environment:
+          MINIO_ACCESS_KEY: admin
+          MINIO_SECRET_KEY: admin@123
+        command: server /data
+    ice-xd-celery-worker-1:
+        image: ice_celery:v1.0
+        restart: unless-stopped
+        environment:
+          - REDIS_END_POINT=redis://ice-xd-redis:6379/0
+        #  - MONGO_END_POINT=mongodb://icexd:icexd123@ice-xd-mongo:27017/verbis
+          - MONGO_END_POINT=mongodb://ice-xd-mongo:27017/verbis
+          - MONGO_DB_NAME=verbis
+          - MINIO_END_POINT=ice-xd-minio:9000
+          - MINIO_ACCESS_KEY=admin
+          - MINIO_SECRET_KEY=admin@123
+          - MINIO_BUCKET_NAME=icemodels
+        links:
+          - ice-xd-mongo
+          - ice-xd-redis
+          - ice-xd-minio
+ #         - ice-xd-corenlp
+    ice-xd-celery-worker-2:
+        image: icedockerregistry.azurecr.io/ice-xd-ner/celery:v3.1
+        restart: unless-stopped
+        environment:
+          - REDIS_END_POINT=redis://ice-xd-redis:6379/0
+       #   - MONGO_END_POINT=mongodb://icexd:icexd123@ice-xd-mongo:27017/verbis
+          - MONGO_END_POINT=mongodb://ice-xd-mongo:27017/verbis
+          - MONGO_DB_NAME=verbis
+          - MINIO_END_POINT=ice-xd-minio:9000
+          - MINIO_ACCESS_KEY=admin
+          - MINIO_SECRET_KEY=admin@123
+          - MINIO_BUCKET_NAME=icemodels
+        links:
+          - ice-xd-mongo
+          - ice-xd-redis
+          - ice-xd-minio
+  #        - ice-xd-corenlp
+    ice-xd-celery-worker-3:
+        image: icedockerregistry.azurecr.io/ice-xd-ner/celery:v3.1
+        restart: unless-stopped
+        environment:
+          - REDIS_END_POINT=redis://ice-xd-redis:6379/0
+       #   - MONGO_END_POINT=mongodb://icexd:icexd123@ice-xd-mongo:27017/verbis
+          - MONGO_END_POINT=mongodb://ice-xd-mongo:27017/verbis
+          - MONGO_DB_NAME=verbis
+          - MINIO_END_POINT=ice-xd-minio:9000
+          - MINIO_ACCESS_KEY=admin
+          - MINIO_SECRET_KEY=admin@123
+          - MINIO_BUCKET_NAME=icemodels
+        links:
+          - ice-xd-mongo
+          - ice-xd-redis
+          - ice-xd-minio
+   #       - ice-xd-corenlp
+   # ice-xd-corenlp:
+    #    image: icedockerregistry.azurecr.io/ice-xd-ner/corenlp:v3.1
+     #   restart: unless-stopped
+      #  volumes:
+       #   - /home/ice-ner-dev/.verbis/store:/ice-ner/.verbis/store
+       # ports:
+        #  - 9001:9001
+

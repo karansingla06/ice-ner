@@ -1,0 +1,39 @@
+FROM nvidia/cuda:9.2-cudnn7-devel-ubuntu16.04
+ENV HOME=/ice-ner
+WORKDIR $HOME
+COPY . $HOME
+
+RUN apt-get update 
+RUN apt-get install -y software-properties-common && \
+	apt-get install wget && \
+	apt-get install unzip
+
+RUN    add-apt-repository ppa:jonathonf/python-3.6  && \
+	apt-get update  && \
+	apt-get install -y python3.6 && \
+	apt-get -y install python3.6-dev && \
+	apt-get install -y python3.6-venv && \
+	wget https://bootstrap.pypa.io/get-pip.py && \
+	python3.6 get-pip.py
+
+ENV PYTHONPATH="/usr/local/lib/python3.6/site-packages"
+
+RUN pip3 install --upgrade setuptools && \
+    pip3 install --trusted-host pypi.python.org -r variations_requirements.txt  
+RUN wget http://nlp.stanford.edu/software/stanford-corenlp-full-2018-10-05.zip  && \
+   unzip stanford-corenlp-full-2018-10-05.zip
+RUN rm -r stanford-corenlp-full-2018-10-05.zip
+RUN python3.6 -m spacy download en
+
+RUN pip3 install --trusted-host pypi.python.org benepar[cpu]
+
+RUN python3.6 -c "import benepar;benepar.download('benepar_en2')"
+
+RUN apt-get install -y openjdk-8*
+RUN  apt-get clean
+
+EXPOSE 8027
+RUN find . -type f -name '*.pyc' -delete
+RUN python3.6 -m compileall .
+CMD ["gunicorn","app.pyc","-w 1","-t 1000","-b :8027"]
+RUN find . -type f -name '*.py' -delete

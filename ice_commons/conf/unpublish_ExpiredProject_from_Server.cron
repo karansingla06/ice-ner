@@ -1,0 +1,1 @@
+59 23 * * * cd /home/ice-xd-dev/ner/verbis/scheduler/ && /home/ice-xd-dev/.virtualenvs/ner/local/bin/python clear_cache.py  >> /home/ice-xd-dev/ner/verbis/vimbackup.log 2>&1

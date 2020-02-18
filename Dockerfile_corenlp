@@ -1,0 +1,46 @@
+FROM ubuntu:16.04
+
+ENV CORENLP_ARCHIVE_VERSION=2018-02-27
+ENV CORENLP_ARCHIVE=stanford-corenlp-full-${CORENLP_ARCHIVE_VERSION}
+ENV CORENLP_PATH=/corenlp
+
+ENV HOME=/ice-ner
+
+WORKDIR $HOME
+
+RUN apt-get update
+
+RUN apt-get install default-jre -y 
+
+RUN apt-get install --no-install-recommends -y \
+                        wget \
+                        unzip
+
+# Downloads corenlp jars and english models
+RUN wget http://nlp.stanford.edu/software/$CORENLP_ARCHIVE.zip && \
+    unzip $CORENLP_ARCHIVE.zip
+
+
+#Download corenlp spanish model
+RUN mv $CORENLP_ARCHIVE $CORENLP_PATH && \
+    cd $CORENLP_PATH && \
+    wget http://nlp.stanford.edu/software/stanford-spanish-corenlp-$CORENLP_ARCHIVE_VERSION-models.jar
+
+RUN rm $CORENLP_ARCHIVE.zip
+
+RUN apt-get install authbind
+RUN mkdir -p /etc/authbind/byport/
+RUN touch /etc/authbind/byport/80
+RUN useradd nlp
+RUN chown nlp:nlp /etc/authbind/byport/80
+RUN chmod 600 /etc/authbind/byport/80
+RUN chmod -R 777 $CORENLP_PATH
+
+WORKDIR $CORENLP_PATH
+
+RUN export CLASSPATH="`find . -name '*.jar'`"
+
+EXPOSE 9001
+
+CMD su nlp -c '/usr/bin/authbind --deep java -Djava.net.preferIPv4Stack=true -Djava.io.tmpdir=$CORENLP_PATH -cp "*" -XX:+UseG1GC -XX:MaxGCPauseMillis=500 -XX:+UseStringDeduplication -XX:SoftRefLRUPolicyMSPerMB=100 -mx20g edu.stanford.nlp.pipeline.StanfordCoreNLPServer -preload "tokenize,ssplit,pos,lemma,ner" -port 9001 -timeout 75000'
+

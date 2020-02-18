@@ -1,0 +1,55 @@
+FROM ubuntu:16.04
+ENV HOME=/ice-ner
+WORKDIR $HOME
+COPY . $HOME
+
+
+RUN apt-get update
+RUN apt-get install -y software-properties-common && \
+        apt-get install wget && \
+        apt-get install unzip
+
+RUN rm -rf ice_celery && \
+    rm -rf scheduler
+
+RUN add-apt-repository ppa:jonathonf/python-3.6
+RUN apt-get update
+
+RUN apt-get install -y build-essential python3.6 python3.6-dev python3-pip python3.6-venv
+RUN python3.6 -m pip install pip --upgrade
+RUN apt-get install -y libsm6 libxext6 libglib2.0-0 libxrender-dev
+
+RUN pip install numpy && \
+    pip install --upgrade setuptools
+RUN    pip install --trusted-host pypi.python.org -r ice_rest/requirements.txt
+
+RUN python3.6 -m nltk.downloader stopwords && \
+    python3.6 -m nltk.downloader punkt && \
+    python3.6 -m nltk.downloader wordnet
+
+RUN mkdir -p .verbis/models/mitie && \
+    cp -r .verbis_git/* .verbis
+
+#RUN cd .verbis && rm settings.conf && cp settings_docker.conf settings.conf && rm settings_docker.conf && rm settings_docker_noauth.conf
+RUN wget https://github.com/mit-nlp/MITIE/releases/download/v0.4/MITIE-models-v0.2.tar.bz2 && \
+    tar jxf MITIE-models-v0.2.tar.bz2 && \
+    mv MITIE-models/english .verbis/models/mitie/ && \
+    wget https://github.com/mit-nlp/MITIE/releases/download/v0.4/MITIE-models-v0.2-Spanish.zip && \
+    unzip MITIE-models-v0.2-Spanish.zip && \
+    mv MITIE-models/spanish .verbis/models/mitie/
+
+RUN python3.6 -m spacy download en_core_web_lg && \
+    python3.6 -m spacy link en_core_web_lg en && \
+    python3.6 -m spacy download es_core_news_sm
+
+RUN cd mitie && python3.6 setup.py build && \
+    mv build/lib/mitie /usr/local/lib/python3.6/site-packages
+RUN rm -rf mitie
+
+EXPOSE 8021
+RUN find . -type f -name '*.pyc' -delete
+RUN python3.6 -m compileall .
+#RUN find . -type f -name '*.py' -delete
+ENV PYTHONPATH="/usr/local/lib/python3.6/site-packages"
+
+CMD ["gunicorn","ice_rest.app:app","-w 1","-t 1000","-b :8021"]
