@@ -5,8 +5,8 @@
 ice_rest/rest/services/parse/
 
 ### Other important files and directories-
-ice_commons/store/models.py
-ice_commons/core/
+ice_commons/store/models.py <br>
+ice_commons/core/ <br>
 ice_commons/er/engines/
 
 ### Db access-
