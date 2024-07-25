@@ -3,7 +3,7 @@ falcon
 gunicorn
 setuptools
 nltk
-torch==0.3.1
+torch==2.2.0
 h5py
 stanfordcorenlp==3.9.1.1
 cython
